@@ -1,4 +1,3 @@
-
 import streamlit as st
 
 
@@ -174,10 +173,9 @@ EXERCISE_METRICS = {
 
 def show_exercise_metrics(exercise):
     metrics = EXERCISE_METRICS.get(exercise)
-
     if not metrics:
         st.info("No metrics configured for this exercise.")
-        return
+        return 
 
     st.subheader(f"{exercise} Metrics")
 
