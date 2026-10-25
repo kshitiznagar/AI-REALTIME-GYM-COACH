@@ -3,7 +3,7 @@ from services.auth.login_wall import render_login_wall
 from services.state.session_defaults import initial_session_defaults
 from services.config.workout_config import EXERCISE_OPTIONS
 from services.config.exercise_metrics import show_exercise_metrics
-from services.ui.style_loader import load_css, inject_local_font
+from services.ui.style_loader import load_css, inject_local_font, inject_webrtc_styles
 from services.persistence.exercise_repository import init_db
 from streamlit_webrtc import webrtc_streamer, WebRtcMode
 import os
@@ -34,15 +34,23 @@ def main():
         if st.session_state.username:
             st.caption(f"👤 Logged in as {st.session_state.username}")
 
-        st.divider()
-        st.subheader("Workout plan")
         if not workout_started:
-            st.selectbox("Exercise", options=EXERCISE_OPTIONS, key="plan_exercise")
-            st.number_input("Sets", min_value=1, max_value=10, key="plan_sets", step=1)
-            st.number_input("Reps", min_value=0, max_value=50, key="plan_reps", step=1)
-            
+            st.divider()
+            st.subheader("Workout plan")
+
+            current_exercise = st.session_state.get("plan_exercise", EXERCISE_OPTIONS[0])
+            exercise_index = EXERCISE_OPTIONS.index(current_exercise) if current_exercise in EXERCISE_OPTIONS else 0
+
+            selected_exercise = st.selectbox("Exercise", options=EXERCISE_OPTIONS, index=exercise_index, key="select_exercise")
+            selected_sets = st.number_input("Sets", min_value=1, max_value=10, value=int(st.session_state.get("plan_sets", 3)), step=1, key="input_sets")
+            selected_reps = st.number_input("Reps", min_value=0, max_value=50, value=int(st.session_state.get("plan_reps", 10)), step=1, key="input_reps")
+
+            st.session_state["plan_exercise"] = selected_exercise
+            st.session_state["plan_sets"] = selected_sets
+            st.session_state["plan_reps"] = selected_reps
+
             st.markdown("")
-            
+
             start_session_button = st.button("Start workout", width="stretch", key="start_session_button")
             if start_session_button:
                 st.session_state["workout_started"] = True
@@ -53,7 +61,7 @@ def main():
             reps = st.session_state.get("plan_reps")
             st.info(f"**{exercise}** -- {sets} Sets x {reps} Reps")
             end_session_button = st.button("End workout", key="end_session_button", width="stretch")
-            
+
             if end_session_button:
                 st.session_state["workout_started"] = False
                 st.rerun()
@@ -125,7 +133,7 @@ def main():
     
     st.markdown("#### Workout history")
     
-    
+    inject_webrtc_styles()
     
 if __name__ == "__main__":
     main()

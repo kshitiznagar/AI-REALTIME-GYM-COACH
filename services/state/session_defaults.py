@@ -13,11 +13,11 @@ def initial_session_defaults():
         "last_notified_workout_complete": False,
         "last_saved_sets_completed": 0,
         "set_cycle_started_at": 0.0,
-        "last_exercise_type": "Squats",
+        "last_exercise_type": "Barbell Squat",
 
         # Workout plan (set before starting)
         "workout_started": False,
-        "plan_exercise": "Squats",
+        "plan_exercise": "Barbell Squat",
         "plan_sets": 3,
         "plan_reps": 10,
 
